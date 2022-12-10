@@ -22,7 +22,7 @@ object Day10 extends Solution(10) {
 
   private val toOpsWithValue = mapWithValue compose toOps
 
-  private def evaluate(ops: mutable.IndexedSeq[(Ops, Int)]) = {
+  private val evaluate = (ops: mutable.IndexedSeq[(Ops, Int)]) => {
     ops.zipWithIndex.foreach { opWithIndex =>
       val ((op, _), index) = opWithIndex
       op match {
@@ -35,24 +35,26 @@ object Day10 extends Solution(10) {
     ops
   }
 
-  def isPartOfSprite(x: Int, cycle: Int) = Math.abs(cycle - x) <= 1
+  private val toEvaluatedOpsWithValue = evaluate compose toOpsWithValue
+
+  def isPartOfSprite(x: Int, cycle: Int) = Math.abs(cycle % 40 - x) <= 1
 
   solveEasy { input =>
-    val opsWithValue = toOpsWithValue(input)
-    val evaluatedOps = evaluate(opsWithValue)
+    val evaluatedOps = toEvaluatedOpsWithValue(input)
 
     val focusCycles = Seq(20, 60, 100, 140, 180, 220)
     focusCycles.map(cycle => evaluatedOps(cycle - 1)._2 * cycle).sum
   }
 
   solveHard { input =>
-    val opsWithValue = toOpsWithValue(input)
-    val evaluatedOps = evaluate(opsWithValue)
+    val evaluatedOps = toEvaluatedOpsWithValue(input)
     val screen = evaluatedOps.indices.map { cycle =>
-      println(cycle, cycle % 40, evaluatedOps(cycle)._2)
-      if (isPartOfSprite(evaluatedOps(cycle)._2, cycle % 40)) "##" else ".."
+      if (isPartOfSprite(evaluatedOps(cycle)._2, cycle))
+        "##"
+      else
+        ".."
     }.grouped(40)
 
-    screen.map(_.foldLeft("")(_ + _)).foldLeft("")((lines, line) => lines + "\n" + line)
+    "\n" ++ screen.map(_.mkString("")).mkString("\n")
   }
 }
