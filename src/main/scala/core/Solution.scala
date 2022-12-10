@@ -1,17 +1,27 @@
 package core
 
+
+import core.Kind.{Input, Test}
+
 import scala.io.Source
 
-abstract class Solution(nthDay: Int, kind: Kind) extends App {
+abstract class Solution(nthDay: Int) extends App {
   type InputLines = Seq[String]
-  private lazy val input = getNthDayContent(nthDay, kind)
 
-  def solveEasy(fn: InputLines => Any): Unit = solve(1, fn)
+  def solveEasy(fn: InputLines => Any): Unit = solve(1, fn)()
 
-  def solveHard(fn: InputLines => Any): Unit = solve(2, fn)
+  def solveHard(fn: InputLines => Any): Unit = solve(2, fn)()
 
-  private def solve(nthChallenge: Int, fn: InputLines => Any): Unit = {
-    val answer = fn(input)
+  object solveEasy {
+    def withTestInput(fn: InputLines => Any): Unit = solve(1, fn)(Test)
+  }
+
+  object solveHard {
+    def withTestInput(fn: InputLines => Any): Unit = solve(2, fn)(Test)
+  }
+
+  private def solve(nthChallenge: Int, fn: InputLines => Any)(kind: Kind = Input): Unit = {
+    val answer = fn(getNthDayContent(nthDay, kind))
     done(nthChallenge, answer)
   }
 
