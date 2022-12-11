@@ -6,3 +6,5 @@ lazy val root = (project in file("."))
   .settings(
     name := "readvent-of-code"
   )
+
+libraryDependencies += "org.apfloat" % "apfloat" % "1.10.1"
